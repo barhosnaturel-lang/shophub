@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopHub - E-Ticaret</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        :root {
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+        
+        body { background: var(--light); color: var(--dark); }
+        
+        /* HEADER */
+        header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        .nav-icons {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--secondary);
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+        
+        /* HERO */
+        .hero {
+            margin-top: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 0.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .btn:hover { transform: translateY(-3px); }
+        
+        .btn-primary { background: white; color: var(--primary); }
+        .btn-secondary { background: transparent; color: white; border: 2px solid white; }
+        
+        /* KONTROLLER */
+        .controls {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 1rem;
+        }
+        
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        /* ÜRÜNLER */
+        .products-section {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .product-info { padding: 1.5rem; }
+        
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-price {
+            font-size: 1.3rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+        
+        /* SEPET */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: right 0.3s;
+            padding: 2rem;
+        }
+        
+        .cart-sidebar.open { right: 0; }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1500;
+            display: none;
+        }
+        
+        .overlay.active { display: block; }
+        
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .cart-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 3000;
+        }
+        
+        .toast.show { transform: translateX(0); }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .cart-sidebar { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <nav>
+            <div class="logo">🛍️ ShopHub</div>
+            <div class="nav-icons">
+                <button class="icon-btn" onclick="toggleCart()">
+                    🛒 <span class="badge" id="cartBadge">0</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <h1>Yeni Sezon Ürünler</h1>
+        <p>Harika ürünlerde %50'ye varan indirimler</p>
+        <button class="btn btn-primary" onclick="scrollToProducts()">Alışverişe Başla</button>
+    </section>
+
+    <!-- KONTROLLER -->
+    <div class="controls">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Ürün ara..." onkeyup="searchProducts()">
+        </div>
+        <button class="filter-btn active" onclick="filterCategory('all')">Tümü</button>
+        <button class="filter-btn" onclick="filterCategory('elektronik')">Elektronik</button>
+        <button class="filter-btn" onclick="filterCategory('giyim')">Giyim</button>
+    </div>
+
+    <!-- ÜRÜNLER -->
+    <section class="products-section" id="products">
+        <div class="products-grid" id="productsContainer"></div>
+    </section>
+
+    <!-- SEPET -->
+    <div class="overlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <h2>Sepetim</h2>
+        <div id="cartItems"></div>
+        <h3 id="cartTotal">Toplam: ₺0</h3>
+        <button class="btn btn-primary" style="width:100%; margin-top:1rem;">Ödemeye Geç</button>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">Ürün sepete eklendi!</div>
+
+    <script>
+        // ÜRÜNLER
+        const products = [
+            { id: 1, name: "Kablosuz Kulaklık", category: "elektronik", price: 899, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
+            { id: 2, name: "Akıllı Saat", category: "elektronik", price: 2499, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" },
+            { id: 3, name: "Spor Ayakkabı", category: "giyim", price: 799, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400" },
+            { id: 4, name: "Kot Ceket", category: "giyim", price: 599, image: "https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?w=400" }
+        ];
+
+        let cart = [];
+
+        // BAŞLANGIÇ
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(products);
+        });
+
+        // ÜRÜNLERİ GÖSTER
+        function renderProducts(list) {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = list.map(product => `
+                <div class="product-card">
+                    <img src="${product.image}" class="product-image">
+                    <div class="product-info">
+                        <h3 class="product-title">${product.name}</h3>
+                        <div class="product-price">₺${product.price}</div>
+                        <button class="add-to-cart" onclick="addToCart(${product.id})">
+                            Sepete Ekle
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // SEPETE EKLE
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            updateCart();
+            showToast(`${product.name} sepete eklendi!`);
+        }
+
+        // SEPETİ GÜNCELLE
+        function updateCart() {
+            document.getElementById('cartBadge').textContent = cart.length;
+            document.getElementById('cartItems').innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <img src="${item.image}">
+                    <div>
+                        <div>${item.name}</div>
+                        <div>₺${item.price}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('cartTotal').textContent = `Toplam: ₺${total}`;
+        }
+
+        // SEPETİ AÇ/KAPA
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('open');
+            document.querySelector('.overlay').classList.toggle('active');
+        }
+
+        // ARAMA
+        function searchProducts() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+            renderProducts(filtered);
+        }
+
+        // KATEGORİ FİLTRELE
+        function filterCategory(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (cat === 'all') {
+                renderProducts(products);
+            } else {
+                renderProducts(products.filter(p => p.category === cat));
+            }
+        }
+
+        // TOAST GÖSTER
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ÜRÜNLERE KAYDIR
+        function scrollToProducts() {
+            document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+
+</body>
+</html>
